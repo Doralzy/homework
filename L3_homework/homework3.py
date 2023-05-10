@@ -72,9 +72,7 @@ class StudentList:
     def update(self, student: Student):
         id_list = []
         for item in self.s_list:
-            s_id = item.id
-            id_list.append(s_id)
-            # id_list = [item.id for item in self.s_list]
+            id_list.append(item.id)
             if student.id not in id_list:
                 msg = "未找到可更新的学员信息，建议使用save方式"
             else:
@@ -97,14 +95,15 @@ class StudentList:
             id_list = [item.id for item in self.s_list]
             if student.id not in id_list:
                 info_list = []
-                if os.path.exists(".\save_data.json"):
-                    size = os.path.getsize(".\save_data.json")
+                file = ".\save.json"
+                if os.path.exists(os.path.abspath(file)):
+                    size = os.path.getsize(file)
                     if size == 0:
                         info_list.append(student.__dict__)
-                        with open(".\save_data.json", 'w', encoding="utf-8") as f:
+                        with open(file, 'w', encoding="utf-8") as f:
                             json.dump(info_list, f, ensure_ascii=False)
                     else:
-                        with open(".\save_data.json", "r+", encoding="utf-8") as f:
+                        with open(file, "r+", encoding="utf-8") as f:
                             data = json.load(f)
                             save_id_list = [item['id'] for item in data]
                             if student.id not in save_id_list:
@@ -112,12 +111,14 @@ class StudentList:
                                 f.seek(0)
                                 f.truncate(0)
                                 json.dump(data, f, ensure_ascii=False)
-                                print("新增学员信息已保存到文件: save_data.json")
+                                print("新增学员信息已保存到文件: save.json")
                             else:
                                 print(f"保存文件里已存在该学生信息id：{student.id}")
                 else:
-                    with open(".\save_data.json", 'w', encoding='utf-8') as f:
-                        json.dump(info_list.append(student.__dict__), f, ensure_ascii=False)
+                    # with open(file, 'w', encoding='utf-8') as f:
+                    with open(file, 'w', encoding='utf-8') as f:
+                        info_list.append(student.__dict__)
+                        json.dump(info_list, f, ensure_ascii=False)
             else:
                 print("初始化学员信息里，已经存在该学生")
 
@@ -125,7 +126,7 @@ class StudentList:
         """
         根据 student_id 读取save文件查询信息
         """
-        with open("./save_data.json", "r", encoding="utf-8") as f:
+        with open(".\save.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             for item in data:
                 if item['id'] == student_id:
@@ -152,7 +153,7 @@ if __name__ == '__main__':
     s_list.delete(2)
 
     # 实现save
-    s_info1 = Student(1, "小黑", "boy", 100)
+    s_info1 = Student(9, "小黑", "boy", 100)
     s_list.save(s_info1)
 
     # 实现get()方法
